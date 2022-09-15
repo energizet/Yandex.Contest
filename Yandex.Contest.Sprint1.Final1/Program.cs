@@ -15,59 +15,46 @@ internal class Program
 
 	static List<int> GetResult(List<int> homes)
 	{
-		var empties = new List<int>();
-		for (int i = 0; i < homes.Count; i++)
+		var res = Enumerable.Repeat(-1, homes.Count).ToList();
+
+		var lZero = -1;
+		var rZero = -1;
+		for (int li = 0, ri = homes.Count - 1; li < homes.Count; li++, ri--)
 		{
-			var home = homes[i];
-			if (home == 0)
+			var l = homes[li];
+			var r = homes[ri];
+			var lRes = res[li];
+			var rRes = res[ri];
+
+			if (l == 0)
 			{
-				empties.Add(i);
+				lZero = li;
+			}
+
+			if (r == 0)
+			{
+				rZero = ri;
+			}
+
+			var lAbs = li - lZero;
+			if (lZero >= 0 && (lRes < 0 || lAbs < lRes))
+			{
+				res[li] = lAbs;
+			}
+
+			var rAbs = rZero - ri;
+			if (rZero >= 0 && (rRes < 0 || rAbs < rRes))
+			{
+				res[ri] = rAbs;
+			}
+
+			if (li == ri && lAbs >= 0 && rAbs >= 0)
+			{
+				res[li] = Math.Min(lAbs, rAbs);
 			}
 		}
 
-		var res = homes.Select((_, i) => GetMinClose(i, empties)).ToList();
 		return res;
-	}
-
-	static int GetMinClose(int current, List<int> empties)
-	{
-		var (li, ri) = GetBorder(current, empties);
-		var (l, r) = (empties[li], empties[ri]);
-		var (dl, dr) = (Math.Abs(current - l), Math.Abs(current - r));
-
-		var min = Math.Min(dl, dr);
-		return min;
-	}
-
-	static (int l, int r) GetBorder(int current, List<int> empties)
-	{
-		var left = 0;
-		var right = empties.Count - 1;
-
-		while (right - left > 1)
-		{
-			var middle = (right + left) / 2;
-			var item = empties[middle];
-
-			if (current == item)
-			{
-				return (middle, middle);
-			}
-
-			if (current < item)
-			{
-				right = middle;
-				continue;
-			}
-
-			if (current > item)
-			{
-				left = middle;
-				continue;
-			}
-		}
-
-		return (left, right);
 	}
 
 	static T GetValue<T>(Func<string, T> func)
