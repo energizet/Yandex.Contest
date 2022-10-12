@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// https://contest.yandex.ru/contest/22450/run-report/70471131/
+/// </summary>
 internal class Program
 {
 	static void Main(string[] args)
