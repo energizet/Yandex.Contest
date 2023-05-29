@@ -6,76 +6,156 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-		var count = GetValue(int.Parse);
-		var stack = new List<int>();
+		var count = Contest.GetValue(int.Parse);
+		var stack = new Stack();
 
-		for (int i = 0; i < count; i++)
+		for (var i = 0; i < count; i++)
 		{
-			var command = GetList();
+			var command = Contest.GetList();
 			Do(stack, command);
 		}
 	}
 
-	static void Do(List<int> stack, List<string> command)
+	static void Do(Stack stack, List<string> command)
 	{
 		switch (command[0])
 		{
 			case "push":
-				Push(stack, int.Parse(command[1]));
+				stack.Push(int.Parse(command[1]));
 				break;
 			case "pop":
-				Pop(stack);
+				stack.Pop();
 				break;
 			case "get_max":
-				GetMax(stack);
+				stack.GetMax();
 				break;
 		}
 	}
+}
 
-	static void Push(List<int> stack, int item)
+class Stack
+{
+	private List<(int value, int max)> _stack = new();
+	private int _count = 0;
+
+	public void Push(int item)
 	{
-		stack.Add(item);
+		(int, int) insertItem;
+
+		if (_count == 0)
+		{
+			insertItem = (item, item);
+		}
+		else
+		{
+			insertItem = (item, Math.Max(item, _stack[_count - 1].max));
+		}
+
+		if (_count < _stack.Count)
+		{
+			_stack[_count] = insertItem;
+		}
+		else
+		{
+			_stack.Add(insertItem);
+		}
+
+		_count++;
 	}
 
-	static void Pop(List<int> stack)
+	public void Pop()
 	{
-		if (stack.Count <= 0)
+		if (_count <= 0)
 		{
-			Console.WriteLine("error");
+			"error".Print();
 			return;
 		}
 
-		stack.RemoveAt(stack.Count - 1);
+		_count--;
 	}
 
-	static void GetMax(List<int> stack)
+	public void GetMax()
 	{
-		if (stack.Count <= 0)
+		if (_count <= 0)
 		{
-			Console.WriteLine("None");
+			"None".Print();
 			return;
 		}
 
-		Console.WriteLine(stack.Max());
+		_stack[_count - 1].max.Print();
+	}
+}
+
+
+/// <summary>
+/// I/O методы
+/// </summary>
+internal static class Contest
+{
+	public static string GetValue()
+	{
+		return Console.ReadLine()!;
 	}
 
-	static T GetValue<T>(Func<string, T> func)
+	public static T GetValue<T>(Func<string, T> func)
 	{
-		return func(Console.ReadLine());
+		return func(GetValue());
 	}
 
-	static List<T> GetList<T>(Func<string, T> func, StringSplitOptions splitOptions = StringSplitOptions.RemoveEmptyEntries)
+	public static IEnumerable<T> GetIEnumerable<T>(Func<string, T> func,
+		StringSplitOptions splitOptions = StringSplitOptions.RemoveEmptyEntries)
 	{
-		return Console.ReadLine()
-				.Split(new[] { ' ', '\t' }, splitOptions)
-				.Select(func)
-				.ToList();
+		return GetValue()
+			.Split(new[] {' ', '\t'}, splitOptions)
+			.Select(func);
 	}
 
-	static List<string> GetList(StringSplitOptions splitOptions = StringSplitOptions.RemoveEmptyEntries)
+	public static List<T> GetList<T>(Func<string, T> func,
+		StringSplitOptions splitOptions = StringSplitOptions.RemoveEmptyEntries)
 	{
-		return Console.ReadLine()
-				.Split(new[] { ' ', '\t' }, splitOptions)
-				.ToList();
+		return GetIEnumerable(func, splitOptions).ToList();
+	}
+
+	public static List<string> GetList(
+		StringSplitOptions splitOptions = StringSplitOptions.RemoveEmptyEntries)
+	{
+		return GetList(str => str, splitOptions);
+	}
+
+	public static T[] GetArray<T>(Func<string, T> func,
+		StringSplitOptions splitOptions = StringSplitOptions.RemoveEmptyEntries)
+	{
+		return GetIEnumerable(func, splitOptions).ToArray();
+	}
+
+	public static string[] GetArray(
+		StringSplitOptions splitOptions = StringSplitOptions.RemoveEmptyEntries)
+	{
+		return GetArray(str => str, splitOptions);
+	}
+
+	public static string Join<T>(this IEnumerable<T> arr, string separator = " ")
+	{
+		return string.Join(separator, arr);
+	}
+
+	public static void Print<T>(this IEnumerable<T> arr, string separator = " ")
+	{
+		arr.Join(separator).Print();
+	}
+
+	public static void Print(this ValueType value)
+	{
+		Console.WriteLine(value);
+	}
+
+	public static void Print(this object obj)
+	{
+		Console.WriteLine(obj);
+	}
+
+	public static void Print(this string str)
+	{
+		Console.WriteLine(str);
 	}
 }
