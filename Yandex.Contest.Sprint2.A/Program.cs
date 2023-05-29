@@ -12,16 +12,13 @@ internal static class Program
 		var m = Contest.GetValue(int.Parse);
 
 		var matrix = new int[m][];
-		for (var i = 0; i < m; i++)
-		{
-			matrix[i] = new int[n];
-		}
-		
+
 		for (var i = 0; i < n; i++)
 		{
 			var line = Contest.GetArray(int.Parse);
 			for (var j = 0; j < m; j++)
 			{
+				matrix[j] ??= new int[n];
 				matrix[j][i] = line[j];
 			}
 		}
